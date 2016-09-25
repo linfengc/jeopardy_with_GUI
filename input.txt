@@ -1,0 +1,28 @@
+Music::Anime::Friends::Movies::Fitness
+100::200::300::400::500
+::Music::100::Artist who's concert you are going to in September::Childish Gambino
+::Music::200::Artist who's concert you are going to in September::Childish Gambino
+::Music::300::Artist who's concert you are going to in September::Childish Gambino
+::Music::400::Artist who's concert you are going to in September::Childish Gambino
+::Music::500::Artist who's concert you are going to in September::Childish Gambino
+::Anime::100::Your favorite anime::Darker than Black
+::Anime::200::Your favorite anime::Darker than Black
+::Anime::300::Your favorite anime::Darker than Black
+::Anime::400::Your favorite anime::Darker than Black
+::Anime::500::Your favorite anime::Darker than Black
+::FJ::Your first name (birth name)::Zechariah
+::Friends::100::Your best friend from HS0::Amy
+::Friends::200::Your best friend from HS1::Amy
+::Friends::300::Your best friends from CS104::Zach and Shiv
+::Friends::400::Your best friend from HS2::Amy
+::Friends::500::Your best friend from HS3::Amy
+::Movies     ::100::The best movie you've seen recently::Pineapple Express
+::Movies::200::The best movie you've seen recently::Pineapple Express
+::Movies::300::The best movie you've seen recently::Pineapple Express
+::Movies::400::The best movie you've seen recently::Pineapple Express
+::Movies::500::     The best movie you've seen recently::Pineapple Express
+::Fitness::100    ::Your favorite exercise (two word)::Pull ups
+::Fitness::200::Your favorite exercise (two word)::Pull ups
+::Fitness::300::Your favorite exercise (two word)::Pull ups
+::Fitness::400::Your favorite exercise (two word)::Pull ups
+::Fitness::500::Your favorite exercise (two word)::Pull ups
