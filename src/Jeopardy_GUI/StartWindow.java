@@ -1,6 +1,7 @@
 package Jeopardy_GUI;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -86,8 +87,11 @@ public class StartWindow extends JFrame {
 		
 		f1 = new JTextField(); //f1.setBackground(Color.gray);
 		f2 = new JTextField(); //f2.setBackground(Color.gray);
+
 		f3 = new JTextField(); //f3.setBackground(Color.gray);
+	
 		f4 = new JTextField(); //f4.setBackground(Color.gray);
+		
 		
 		
 		
@@ -268,9 +272,11 @@ public class StartWindow extends JFrame {
 			public void actionPerformed(ActionEvent e){
 				teamSlider.setValue(1);
 				f1.setText("");
-				fileChooser.setSelectedFile(new File(""));				
+				fileChooser.setSelectedFile(new File(""));
+				selectedFile = null;
 				quickMode.setSelected(false);
 				inQuickMode = false;
+				fileName.setText("");
 			}
 		});
 		exitBtn.addActionListener(new ActionListener(){
@@ -292,6 +298,7 @@ public class StartWindow extends JFrame {
 	
 	
 	public boolean checkFileFormat(){
+		if(selectedFile == null) return false;
 		Play p = new Play(selectedFile.getAbsolutePath());
 		return p.checkFormat();
 	}

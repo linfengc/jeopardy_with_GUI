@@ -5,15 +5,20 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -206,7 +211,8 @@ public class GameWindow extends JFrame{
 					textArea.setText(textArea.getText()+ "\n" + teams[index].getName() + " bets $ " + bet );
 					tBet.setEnabled(false);
 					tBet.setBackground(Color.LIGHT_GRAY);
-					tSlider.setEnabled(false);					
+					tSlider.setEnabled(false);
+					
 					if(checkIfAllBets()){
 						//show question
 						finalRoundQ.setText(fjQ.getQeustion());
@@ -216,10 +222,15 @@ public class GameWindow extends JFrame{
 							finalSubmitBtn.get(j).setBackground(Color.WHITE);
 						}
 						
-						
 					}
 				}
 			});	
+			finalAns.addMouseListener(new MouseAdapter(){
+	            @Override
+	            public void mouseClicked(MouseEvent e){
+	               finalAns.setText("");
+	            }
+	        });
 			tSlider.addChangeListener(new ChangeListener() {
 		        public void stateChanged(ChangeEvent e) {
 		        	String moneyString = new Integer(tSlider.getValue()).toString();
@@ -253,17 +264,27 @@ public class GameWindow extends JFrame{
 	public void createFinalRoundPan(){
 		initializeFinalComponenets();
 		finalPanel.setLayout(new BoxLayout(finalPanel, BoxLayout.Y_AXIS));
+		finalPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
+		finalPanel.setMaximumSize(new Dimension(1000,1000));		
+		finalPanel.setAlignmentX(JPanel.LEFT_ALIGNMENT);
+		//finalPanel.setMaximumSize(new Dimension(1000,1000));
+		JPanel grid = new JPanel();
+		grid.setLayout(new GridLayout(5,1));
+		grid.setPreferredSize(new Dimension(900, 600));
+		grid.setMaximumSize(new Dimension(900, 600));
+		grid.setAlignmentX(JPanel.LEFT_ALIGNMENT);
+		///grid.setBorder(new EmptyBorder(15, 15, 15, 15));
 		JLabel title = new JLabel("Final Jeopardy Round", JLabel.CENTER);
 		title.setFont(new Font("Sans-Serif", Font.PLAIN, 24));
 		finalPanel.add(title);
 		initializeFinalComponenets();
-		ArrayList<Integer> finalTeamsIdx = game.getFinalCandidates();
-		//stub
-		ArrayList<JPanel> teamPanels = new ArrayList<JPanel>();			
+		ArrayList<Integer> finalTeamsIdx = game.getFinalCandidates();		
 		for(int i = 0; i < finalTeamsIdx.size(); i++){
 			JPanel t = new JPanel();
-			t.setLayout(new BoxLayout(t, BoxLayout.X_AXIS));			
+			t.setLayout(new BoxLayout(t, BoxLayout.X_AXIS));	
+			t.setMaximumSize(new Dimension(475, 50));
 			JLabel tName = new JLabel(teams[finalTeamsIdx.get(i)].getName());
+			tName.setFont(new Font("Sans Serif", Font.BOLD , 15));
 			JSlider tSlider = new JSlider(JSlider.HORIZONTAL, 1, teams[finalTeamsIdx.get(i)].getDollars(), 1);
 			tSlider.setPaintTicks(true);
 			tSlider.setPaintLabels(true);
@@ -279,22 +300,41 @@ public class GameWindow extends JFrame{
 			finalTeamLbl.add(tName);
 			finalRoundCorrect.add(false); //set the team not answer correct by default
 			t.add(tName); t.add(tSlider); t.add(MoneyLbl); t.add(tBet); 
-			finalPanel.add(t);
-		}			
+			grid.add(t);
+		}	
 		finalRoundQ = new JLabel("And the question is...", JLabel.CENTER);
-		finalPanel.add(finalRoundQ);
+		finalRoundQ.setFont(new Font("Sans Serif", Font.BOLD +Font.ITALIC, 15));
+		finalRoundQ.setPreferredSize(new Dimension(700, 50));
+		finalRoundQ.setMaximumSize(new Dimension(700, 150));
+		grid.add(finalRoundQ);
+		finalPanel.add(grid);
+		
+		
+		JPanel lowerGrid = new JPanel();
+		lowerGrid.setLayout(new GridLayout(2,2));
+		lowerGrid.setMinimumSize(new Dimension(900, 250));
+		lowerGrid.setMaximumSize(new Dimension(900, 250));
+		lowerGrid.setAlignmentX(JPanel.CENTER_ALIGNMENT);
 		for(int i = 0; i < finalTeamsIdx.size() ; i++){
 			JPanel t = new JPanel();
-			t.setLayout(new BoxLayout(t, BoxLayout.X_AXIS));		
+			t.setMaximumSize(new Dimension(470,100));
+			t.setLayout(new BoxLayout(t, BoxLayout.X_AXIS));	
+			Font font = new Font("Courier", Font.ITALIC,12);
 			JTextField answer = new JTextField(teams[finalTeamsIdx.get(i)].getName() + ", enter your answer.");
-			answer.setMaximumSize(new Dimension(300, 50));
+			answer.setFont(font);
+			answer.setMinimumSize(new Dimension(300, 30));
+			answer.setMinimumSize(new Dimension(300, 30));
 			JButton submitB = new JButton("Submit Answer");
 			submitB.setEnabled(false);
 			submitB.setBackground(Color.LIGHT_GRAY);	
+			submitB.setPreferredSize(new Dimension(200, 50));
+			submitB.setMaximumSize(new Dimension(200, 50));
 			t.add(answer); t.add(submitB);
+			lowerGrid.add(t);
+			//data member for later check
 			finalAnswers.add(answer); finalSubmitBtn.add(submitB);		
-			finalPanel.add(t);		
 		}
+		finalPanel.add(lowerGrid);
 		
 		createFinalRoundEvents(finalTeamsIdx);
 		leftPanel.add(finalPanel, FINALPAN);
@@ -305,64 +345,80 @@ public class GameWindow extends JFrame{
 		questionPanel = new JPanel();
 		questionPanel.setLayout(new BoxLayout(questionPanel, BoxLayout.Y_AXIS));
 		questionPanel.setBorder(new EmptyBorder(50, 50, 50, 50));
-		questionPanel.setSize(new Dimension(1000, 1000));
+		questionPanel.setMaximumSize(new Dimension(1000, 1000));		
+		questionPanel.setAlignmentX(JPanel.LEFT_ALIGNMENT);
 		questionLbl = new JLabel();
-		questionLbl.setPreferredSize(new Dimension(1000,300));
-		questionLbl.setFont(new Font("Sans-Serif", Font.BOLD, 30));
+		questionLbl.setPreferredSize(new Dimension(1000,150));
+		questionLbl.setMinimumSize(new Dimension(1000,150));
+		questionLbl.setFont(new Font("Sans-Serif", Font.BOLD, 20));
 		questionLbl.setOpaque(true);
-		questionLbl.setBackground(Color.gray);
-		questionLbl.setAlignmentX(Component.LEFT_ALIGNMENT);
+		questionLbl.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 		ansTextField = new JTextField();
+		ansTextField.setPreferredSize(new Dimension(500, 50));
 		ansTextField.setMaximumSize(new Dimension(500, 50));
 		ansTextField.setFont(new Font("SansSerif", Font.BOLD, 20));
 		ansTextField.setEditable(true);
+		ansTextField.setAlignmentX(JTextField.CENTER_ALIGNMENT);
 		submitBtn = new JButton("Submit");	
-		submitBtn.setPreferredSize(new Dimension(200, 500));
+		submitBtn.setMinimumSize(new Dimension(200, 50));
+		submitBtn.setBackground(Color.gray);
+		submitBtn.setForeground(Color.white);
+		submitBtn.setAlignmentX(JButton.CENTER_ALIGNMENT);
 		JPanel profilePanel = new JPanel();
 		profilePanel.setLayout(new GridLayout(1,3));
-		profilePanel.setMaximumSize(new Dimension(1000, 175));
+		profilePanel.setMaximumSize(new Dimension(1000, 100));
 		profilePanel.setBackground(Color.gray);
 		JPanel lowerPanel = new JPanel();
-		lowerPanel.setPreferredSize(new Dimension(900, 280));
-		lowerPanel.setLayout(new BoxLayout(lowerPanel, BoxLayout.Y_AXIS));
-		lowerPanel.setBackground(Color.blue);
+		lowerPanel.setMaximumSize(new Dimension(900, 280));
+		lowerPanel.setLayout(new BoxLayout(lowerPanel, BoxLayout.Y_AXIS));		
 		teamNameLbl = new JLabel();
 		teamNameLbl.setHorizontalAlignment(SwingConstants.CENTER);
 		teamNameLbl.setVerticalAlignment(SwingConstants.CENTER);
 		teamNameLbl.setFont(new Font("Sans-Serif", Font.BOLD, 30));
-		teamNameLbl.setPreferredSize(new Dimension(300, 175));
+		teamNameLbl.setPreferredSize(new Dimension(300, 100));
+		teamNameLbl.setForeground(Color.WHITE);
 		catSelectedLbl = new JLabel();
 		catSelectedLbl.setHorizontalAlignment(SwingConstants.CENTER);
 		catSelectedLbl.setVerticalAlignment(SwingConstants.CENTER);
 		catSelectedLbl.setFont(new Font("Sans-Serif", Font.BOLD, 30));
-		catSelectedLbl.setPreferredSize(new Dimension(300, 175));
+		catSelectedLbl.setPreferredSize(new Dimension(300, 100));
+		catSelectedLbl.setForeground(Color.WHITE);
 		pointSelectedLbl = new JLabel();
 		pointSelectedLbl.setHorizontalAlignment(SwingConstants.CENTER);
 		pointSelectedLbl.setVerticalAlignment(SwingConstants.CENTER);
-		pointSelectedLbl.setPreferredSize(new Dimension(300, 175));
+		pointSelectedLbl.setPreferredSize(new Dimension(300, 100));
 		pointSelectedLbl.setFont(new Font("Sans-Serif", Font.BOLD, 30));
-		warningLbl = new JLabel("Remember to pose your question as a question form.");	
-		warningLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
-		warningLbl.setAlignmentY(Component.CENTER_ALIGNMENT);
+		pointSelectedLbl.setForeground(Color.WHITE);
+		warningLbl = new JLabel("");	
+		warningLbl.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 		warningLbl.setOpaque(true);
-		warningLbl.setBackground(Color.gray);
-		warningLbl.setPreferredSize(new Dimension(1000, 250));
+		warningLbl.setPreferredSize(new Dimension(500, 50));
+		warningLbl.setMaximumSize(new Dimension(500, 50));
 		warningLbl.setFont(new Font("Sans-Serif", Font.PLAIN, 18)); //stub only shows when wrong format
-		warningLbl.setVisible(false);
 		profilePanel.add(teamNameLbl);
 		profilePanel.add(catSelectedLbl);
 		profilePanel.add(pointSelectedLbl);
 		JPanel ansPanel = new JPanel();
-		ansPanel.setLayout(new BoxLayout(ansPanel, BoxLayout.X_AXIS));	
-		ansPanel.setPreferredSize(new Dimension(500, 350));
-		ansPanel.add(ansTextField);
-		ansPanel.add(Box.createHorizontalStrut(30));
-		ansPanel.add(submitBtn);
+		ansPanel.setLayout(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(10,10,10,10);
+        ansPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		ansPanel.setLayout(new GridBagLayout());	
+		ansPanel.setPreferredSize(new Dimension(1000, 250));
+		ansPanel.add(ansTextField,gbc);
+		//ansPanel.add(Box.createHorizontalStrut(30));
+		ansPanel.add(submitBtn,gbc);
+		ansPanel.setAlignmentX(JPanel.CENTER_ALIGNMENT);
+		lowerPanel.setMinimumSize(new Dimension(1000,650));
+		lowerPanel.setMaximumSize(new Dimension(1000,650));
+		lowerPanel.add(Box.createVerticalStrut(30));
 		lowerPanel.add(warningLbl);
 		lowerPanel.add(Box.createVerticalStrut(30));
 		lowerPanel.add(questionLbl);
 		lowerPanel.add(Box.createVerticalStrut(30));
+
 		lowerPanel.add(ansPanel);
+		lowerPanel.setAlignmentX(JPanel.CENTER_ALIGNMENT);
 		questionPanel.add(profilePanel);
 		//questionPanel.add(Box.createHorizontalStrut(20));
 		questionPanel.add(lowerPanel);
@@ -373,14 +429,12 @@ public class GameWindow extends JFrame{
 	public void addRightPanelElements(){
 		rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
 		rightPanel.setBorder(new EmptyBorder(18, 15, 15, 15));
-		rightPanel.setPreferredSize(new Dimension(500, 1000));
-		rightPanel.setAlignmentX( Component.RIGHT_ALIGNMENT );
+		rightPanel.setMaximumSize(new Dimension(400, 1000));
+		rightPanel.setAlignmentX( JPanel.LEFT_ALIGNMENT );
 		JPanel rightUpper = new JPanel();
 		JPanel rightLower = new JPanel();
 		JPanel rightMiddle = new JPanel();
-		rightUpper.setPreferredSize(new Dimension(500, 400));
-		rightMiddle.setPreferredSize(new Dimension(500, 100));
-		rightLower.setPreferredSize(new Dimension(500, 400));
+	
 		createMiddleLabel(rightMiddle);
 		rightUpper.setLayout(new GridLayout(4,2));
 		createTextArea(rightLower);
@@ -392,6 +446,9 @@ public class GameWindow extends JFrame{
 	
 	public void createMiddleLabel(JPanel rightMiddle){
 		rightMiddle.setLayout(new GridLayout(1,1));
+		rightMiddle.setAlignmentX( JPanel.LEFT_ALIGNMENT );
+		rightMiddle.setPreferredSize(new Dimension(500, 100));
+		rightMiddle.setMaximumSize(new Dimension(500, 100));
 		JLabel middleLbl = new JLabel("Game Progress");
 		middleLbl.setBackground(new Color(0,0,182,155) );
 		middleLbl.setOpaque(true);
@@ -403,6 +460,9 @@ public class GameWindow extends JFrame{
 	
 	
 	public void createTeamLabels(JPanel rightUpper){
+		rightUpper.setAlignmentX( JPanel.LEFT_ALIGNMENT );	
+		rightUpper.setPreferredSize(new Dimension(500, 400));
+		rightUpper.setMaximumSize(new Dimension(500, 400));
 		for(int i = 0 ; i < 4; i++){
 			if(i >= numTeam){ //empty space
 				teamsLbl[i] = new JLabel("");
@@ -417,15 +477,14 @@ public class GameWindow extends JFrame{
 			teamsLbl[i].setOpaque(true);
 			teamsLbl[i].setFont(new Font("Sans Serif", Font.BOLD +Font.ITALIC, 15));
 			teamsLbl[i].setHorizontalAlignment(SwingConstants.CENTER);
-			teamsLbl[i].setVerticalAlignment(SwingConstants.CENTER);
-			teamsLbl[i].setPreferredSize(new Dimension(150, 250));
+			teamsLbl[i].setMaximumSize(new Dimension(150, 250));
 			teamMoneyLbl[i].setBackground(Color.gray);
 			teamMoneyLbl[i].setForeground(Color.white);
 			teamMoneyLbl[i].setOpaque(true);
 			teamMoneyLbl[i].setFont(new Font("Sans Serif", Font.BOLD , 15));
 			teamMoneyLbl[i].setHorizontalAlignment(SwingConstants.CENTER);
 			teamMoneyLbl[i].setVerticalAlignment(SwingConstants.CENTER);
-			teamMoneyLbl[i].setPreferredSize(new Dimension(150, 250));
+			teamMoneyLbl[i].setMaximumSize(new Dimension(150, 250));
 			rightUpper.add(teamsLbl[i]);
 			rightUpper.add(teamMoneyLbl[i]);
 		}
@@ -433,7 +492,10 @@ public class GameWindow extends JFrame{
 	}
 	
 	public void createTextArea(JPanel rightLower){
-		textArea = new JTextArea(500,400);
+		rightLower.setAlignmentX( JPanel.LEFT_ALIGNMENT );
+		rightLower.setPreferredSize(new Dimension(500, 400));
+		rightLower.setMaximumSize(new Dimension(500, 400));
+		textArea = new JTextArea(450,400);
 		textArea.setFont(new Font("Helvetica Neue", Font.PLAIN + Font.BOLD, 18));
 		textArea.setEditable(false);
 		textArea.setMargin(new Insets(30, 30, 30, 30));
@@ -441,13 +503,13 @@ public class GameWindow extends JFrame{
 							+ teams[selectedTeamIdx].getName());
 		textArea.setBackground(Color.gray);
 		JScrollPane sp = new JScrollPane (textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		sp.setPreferredSize(new Dimension(500, 400));
+		sp.setPreferredSize(new Dimension(450, 400));
 		rightLower.add(sp);
 	}
 	
 	public void createBoard(){
 		boardPanel = new JPanel();
-		boardPanel.setSize(1000, 1000);
+		boardPanel.setSize(900, 1000);
 		boardPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
 		boardPanel.setLayout(new BoxLayout(boardPanel, BoxLayout.Y_AXIS));
 		JPanel boardUpper = new JPanel();
@@ -483,8 +545,9 @@ public class GameWindow extends JFrame{
 		leftPanel = new JPanel();
 		rightPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
-		leftPanel.setSize(1000, 1000);		
-		rightPanel.setSize(500, 1000);
+		leftPanel.setMaximumSize(new Dimension(850, 1000));		
+		leftPanel.setAlignmentX(JPanel.LEFT_ALIGNMENT);
+		rightPanel.setMaximumSize(new Dimension(500,1000));
 		addLeftPanelElements();
 		addRightPanelElements();
 		leftPanel.setVisible(true);
@@ -565,7 +628,7 @@ public class GameWindow extends JFrame{
 				String answer = ansTextField.getText();
 				selectedQ.answerQuestion(answer);
 				if(!selectedQ.correctFormat() && !selectedQ.getWarned()){				
-					warningLbl.setVisible(true);
+					warningLbl.setText("Remember to pose your question as a question form.");
 					return;
 				}
 				else{
@@ -574,17 +637,16 @@ public class GameWindow extends JFrame{
 						questionAnswered ++;
 						teams[selectedTeamIdx].addDollars(selectedQ.getPoints());
 						teamMoneyLbl[selectedTeamIdx].setText("$" + String.valueOf(teams[selectedTeamIdx].getDollars()));
-						warningLbl.setVisible(false);
 						displayMoneyMessage(true);
 					}
 					else{
 						questionAnswered++; 
 						teams[selectedTeamIdx].minusDollars(selectedQ.getPoints());
 						teamMoneyLbl[selectedTeamIdx].setText("$" +String.valueOf(teams[selectedTeamIdx].getDollars()));
-						warningLbl.setVisible(false);
 						displayMoneyMessage(false);
 					}
 				}
+				warningLbl.setText("");
 				selectedTeamIdx = (selectedTeamIdx + 1)%numTeam;
 				ansTextField.setText("");
 				CardLayout cl = (CardLayout)(leftPanel.getLayout());
@@ -681,6 +743,7 @@ public class GameWindow extends JFrame{
 				}
 				int result = JOptionPane.showConfirmDialog(getParent(),
 						"And the winner(s) is ...\n" + winnerString , "Error", JOptionPane.DEFAULT_OPTION);
+				if(result==0) chooseNewFile();
 			}
 			
 			
